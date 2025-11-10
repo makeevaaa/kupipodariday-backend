@@ -10,11 +10,13 @@ import { User } from '../users/user.entity';
 export class WishesController {
   constructor(private svc: WishesService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Get('last')
   findLast() {
     return this.svc.recent();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get('top')
   findTop() {
     return this.svc.popular();
@@ -46,17 +48,6 @@ export class WishesController {
   @UseGuards(AuthGuard('jwt'))
   @Post(':id/copy')
   async copy(@Param('id') id: string, @Request() req) {
-    const wish = await this.svc.findOne({ where: { id: parseInt(id) } });
-    if (!wish) return { message: 'not found' };
-    await this.svc.create({
-      name: wish.name,
-      link: wish.link,
-      image: wish.image,
-      price: wish.price,
-      description: wish.description,
-      owner: ({ id: req.user.id } as DeepPartial<User>),
-    });
-    await this.svc.updateOne(wish.id, { copied: (wish.copied || 0) + 1 });
-    return { ok: true };
+    return this.svc.copyWish(parseInt(id), req.user.id);
   }
 }

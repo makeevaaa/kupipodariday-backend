@@ -36,4 +36,20 @@ export class WishesService {
   async popular(take = 20) {
     return this.repo.find({ order: { copied: 'DESC' }, take });
   }
+
+  async copyWish(wishId: number, userId: number) {
+    const wish = await this.repo.findOne({ where: { id: wishId } });
+    if (!wish) throw new Error('not found');
+    const newWish = this.repo.create({
+      name: wish.name,
+      link: wish.link,
+      image: wish.image,
+      price: wish.price,
+      description: wish.description,
+      owner: { id: userId } as Partial<import('../users/user.entity').User>,
+    });
+    await this.repo.save(newWish);
+    await this.updateOne(wish.id, { copied: (wish.copied || 0) + 1 } as Partial<import('./wish.entity').Wish>);
+    return { ok: true };
+  }
 }

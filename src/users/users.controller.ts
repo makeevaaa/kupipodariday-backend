@@ -12,55 +12,39 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
   async findOwn(@Request() req) {
-    const u = await this.svc.findOne({ where: { id: req.user.id } });
-    if (!u) return null;
-    const { password, ...rest } = u as any;
-    return rest;
-  }
-
-  @UseGuards(AuthGuard('jwt'))
-  @Patch('me')
-  async update(@Request() req, @Body() body: UpdateUserDto) {
-    const u = await this.svc.updateOne(req.user.id, body);
-    const { password, ...rest } = u as any;
-    return rest;
+    return this.svc.findOne({ where: { id: req.user.id } });
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('me/wishes')
   async getOwnWishes(@Request() req) {
-    return this.svc.findWishesByUser(req.user.id);
+    return this.svc.getOwnWishes(req.user.id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get(':username')
   async findOne(@Param('username') username: string) {
-    const u = await this.svc.findByUsername(username);
-    if (!u) return null;
-    const { password, ...rest } = u as any;
-    return rest;
+    return this.svc.findPublicByUsername(username);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get(':username/wishes')
   async getWishes(@Param('username') username: string) {
-    return this.svc.findWishesByUsername(username);
+    return this.svc.getWishesByUsername(username);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Post('find')
   async findMany(@Body() body: FindUsersDto) {
-    const users = await this.svc.findManyByQuery(body.query);
-    return users.map((u:any) => {
-      const { password, ...rest } = u;
-      return rest;
-    });
+    return this.svc.findManyByQuery(body.query);
   }
 
   @Post('signup')
   async signup(@Body() dto: CreateUserDto) {
-    const u = await this.svc.create(dto);
-    const { password, ...rest } = u as any;
-    return rest;
+    return this.svc.create(dto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('me')
+  async update(@Request() req, @Body() dto: UpdateUserDto) {
+    return this.svc.updateOne(req.user.id, dto);
   }
 }
