@@ -11,6 +11,7 @@ import { Wish } from '../wishes/wish.entity';
 export class WishlistsController {
   constructor(private svc: WishlistsService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   findAll() {
     return this.svc.findMany({});
@@ -23,6 +24,7 @@ export class WishlistsController {
     return this.svc.create({ name: body.name, image: body.image, items, owner: ({ id: req.user.id } as DeepPartial<User>) });
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.svc.findOne({ where: { id: parseInt(id) } });

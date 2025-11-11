@@ -21,13 +21,14 @@ export class WishesController {
   findTop() {
     return this.svc.popular();
   }
-
+  
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   getOne(@Param('id') id: string) {
     return this.svc.findOne({ where: { id: parseInt(id) } });
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))  
   @Post()
   create(@Body() body: CreateWishDto, @Request() req) {
     return this.svc.create({ ...body, owner: ({ id: req.user.id } as DeepPartial<User>) });

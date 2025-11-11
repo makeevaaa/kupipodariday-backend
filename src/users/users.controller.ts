@@ -21,6 +21,7 @@ export class UsersController {
     return this.svc.getOwnWishes(req.user.id);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':username')
   async findOne(@Param('username') username: string) {
     return this.svc.findPublicByUsername(username);
@@ -32,11 +33,13 @@ export class UsersController {
     return this.svc.getWishesByUsername(username);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('find')
   async findMany(@Body() body: FindUsersDto) {
     return this.svc.findManyByQuery(body.query);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('signup')
   async signup(@Body() dto: CreateUserDto) {
     return this.svc.create(dto);
