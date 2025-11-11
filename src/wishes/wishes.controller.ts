@@ -10,13 +10,13 @@ import { User } from '../users/user.entity';
 export class WishesController {
   constructor(private svc: WishesService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt'))
   @Get('last')
   findLast() {
     return this.svc.recent();
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt'))
   @Get('top')
   findTop() {
     return this.svc.popular();
